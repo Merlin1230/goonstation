@@ -1007,7 +1007,7 @@ ABSTRACT_TYPE(/obj/item/gun/kinetic)
 				var/mob/living/carbon/human/user = usr
 				if(istype(user.wear_suit, /obj/item/clothing/suit/security_badge/rancher))
 					var/turf/T = get_turf(M)
-					M.visible_message("<span class='alert'><B>Egg gets all over [M]</B></span>")
+					M.visible_message("<span class='alert'><B>Egg gets all over [M]!</B></span>")
 					playsound(M.loc, "sound/impact_sounds/Slimy_Splat_1.ogg", 100, 1)
 					make_cleanable(/obj/decal/cleanable/eggsplat,T)
 				else
