@@ -1763,6 +1763,10 @@
 	attack(mob/target, mob/user)
 		user.visible_message("[user] flashes the badge at [target.name]: <br><span class='bold'>[bicon(src)] Nanotrasen's Finest [badge_owner_job]: [badge_owner_name].</span>", "You show off the badge to [target.name]: <br><span class='bold'>[bicon(src)] Nanotrasen's Finest [badge_owner_job] [badge_owner_name].</span>")
 
+/obj/item/clothing/suit/security_badge/rancher
+	name = "Head of Ranch Security Badge"
+	desc = "An offical badge for a Nanotrasen Ranch Security Worker."
+
 /obj/item/clothing/suit/hosmedal
 	name = "war medal"
 	desc = ""
