@@ -1765,7 +1765,8 @@
 
 /obj/item/clothing/suit/security_badge/rancher
 	name = "Head of Ranch Security Badge"
-	desc = "An offical badge for a Nanotrasen Ranch Security Worker."
+	desc = "An offical badge for ranchers looking to ward off any invaders."
+	badge_owner_job = "Head of Ranch Security"
 
 /obj/item/clothing/suit/hosmedal
 	name = "war medal"

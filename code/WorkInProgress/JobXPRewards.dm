@@ -641,17 +641,16 @@ mob/verb/checkrewards()
 
 /datum/jobXpReward/rancher/badge
 	name = "Head Of Ranch Security Badge"
-	desc = "To show your dedication to defending those chickens."
+	desc = "To show your dedication to defending those chickens"
 	required_levels = list("Rancher"=0)
 	icon_state = "?"
 	claimable = 1
 	claimPerRound = 1
 
 	activate(var/client/C)
-		boutput(C, "A badge appears in your hands. Defend your ranch with honor.")
+		boutput(C, "A badge appears in your hands. Defend your ranch with honor and pride.")
 		var/obj/item/clothing/suit/security_badge/rancher/I = new/obj/item/clothing/suit/security_badge/rancher
 		I.badge_owner_name = C.mob.real_name
-		I.badge_owner_job = "Head of Ranch Security"
 		I.set_loc(get_turf(C.mob))
 		C.mob.put_in_hand(I)
 		return
