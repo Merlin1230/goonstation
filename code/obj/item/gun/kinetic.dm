@@ -1005,17 +1005,17 @@ ABSTRACT_TYPE(/obj/item/gun/kinetic)
 			var/mob/M = hit_atom
 			if(istype(M))
 				var/mob/living/carbon/human/user = usr
-				if(istype(user.wear_suit, /obj/item/clothing/suit/security_badge/rancher))
+				var/obj/item/clothing/head/cowboy/B = user.head
+				if(istype(user.wear_suit, /obj/item/clothing/suit/security_badge/rancher) || B.badge)
 					var/turf/T = get_turf(M)
-					M.visible_message("<span class='alert'><B>Egg gets all over [M]!</B></span>")
+					M.visible_message("<span class='alert'><B>Egg splatters all over [M]!</B></span>")
 					playsound(M.loc, "sound/impact_sounds/Slimy_Splat_1.ogg", 100, 1)
 					make_cleanable(/obj/decal/cleanable/eggsplat,T)
-				else
-					if(istype(user.wear_suit, /obj/item/clothing/suit/security_badge))
-						src.silenced = 1
-						src.shoot_point_blank(M, M)
-						M.visible_message("<span class='alert'><B>[src] fires, hitting [M] point blank!</B></span>")
-						src.silenced = initial(src.silenced)
+				if(istype(user.wear_suit, /obj/item/clothing/suit/security_badge) && !istype(user.wear_suit, /obj/item/clothing/suit/security_badge/rancher))
+					src.silenced = 1
+					src.shoot_point_blank(M, M)
+					M.visible_message("<span class='alert'><B>[src] fires, hitting [M] point blank!</B></span>")
+					src.silenced = initial(src.silenced)
 
 			prob_clonk = min(prob_clonk + 5, 100)
 			SPAWN_DBG(1 SECONDS)

@@ -634,6 +634,36 @@ proc/filter_trait_hats(var/type)
 	desc = "Yeehaw!"
 	icon_state = "cowboy"
 	item_state = "cowboy"
+	var/badge = null
+
+	attackby(obj/item/C as obj,mob/user as mob)
+		if (istype(C, /obj/item/clothing/suit/security_badge/rancher))
+			user.drop_item()
+			C.set_loc(src)
+			if (isnull(src.badge))
+				boutput(user, "<span class='notice'>You put [C] on the [src].</span>")
+			else
+				boutput(user, "<span class='notice'>You take off the badge and put [C] on [src]")
+				user.put_in_hand_or_drop(src.badge)
+			src.badge = C
+			src.updateSelfDialog()
+
+	examine()
+		. = ..()
+		if (src.badge)
+			. += "It has [badge] on it"
+
+/obj/item/clothing/head/cowboy/verb/remove_badge()
+	set name = "Take off Badge"
+	set desc = "Takes the badge off the cowboy hat"
+	set category = "Local"
+	set src in usr
+
+	if (is_incapacitated(usr))
+		return
+
+	usr.put_in_hand_or_drop(src.badge)
+	src.badge = null
 
 /obj/item/clothing/head/longbee
 	name = "Longbee"
