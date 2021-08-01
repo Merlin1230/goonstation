@@ -653,11 +653,19 @@ proc/filter_trait_hats(var/type)
 		if (src.badge)
 			. += "It has [badge] on it"
 
-/obj/item/clothing/head/cowboy/verb/remove_badge()
-	set name = "Take off Badge"
-	set desc = "Takes the badge off the cowboy hat"
-	set category = "Local"
-	set src in usr
+
+	attack_hand(mob/user as mob)
+		if(user.is_in_hands(src))
+			user.put_in_hand_or_drop(src.badge)
+			src.badge = null
+		else
+			return ..()
+
+	verb/remove_badge()
+		set name = "Take off Badge"
+		set desc = "Takes the badge off the cowboy hat"
+		set category = "Local"
+		set src in usr
 
 	if (is_incapacitated(usr))
 		return
