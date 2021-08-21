@@ -1216,15 +1216,19 @@
 	anchored = 1
 
 	attack_hand(mob/user as mob)
-		/*
-		if(1) return//todo remove
+
 		if(istype(user.abilityHolder, /datum/abilityHolder/composite))
 			var/datum/abilityHolder/composite/C = user.abilityHolder
 			C.addHolder(/datum/abilityHolder/cruiser)
 			C.addAbility(/datum/targetable/cruiser/cancel_camera)
-			user.client.view = 11
+
+			if(user.client.widescreen)
+				user.client.view = "29x23"
+			else
+				user.client.view = "23x23"
+
 			var/area/cruiser/I = get_area(src)
-			user.set_eye(I.ship)*/
+			user.set_eye(I.ship)
 		return
 
 /obj/machinery/cruiser_destroyable/cruiser_pod
@@ -1314,8 +1318,13 @@
 			return
 		using = user
 		user.set_loc(src)
-		//user.set_eye(C.camera)
-		//user.client.view = 11
+		user.set_eye(C.camera)
+
+		if(user.client.widescreen)
+			user.client.view = "29x23"
+		else
+			user.client.view = "23x23"
+
 		if(ishuman(user) && istype(user.abilityHolder, /datum/abilityHolder/composite))
 			var/datum/abilityHolder/composite/H = user.abilityHolder
 			H.addHolderInstance(AbHolder)
@@ -1336,8 +1345,13 @@
 		if(!using) return
 		using.set_loc(src.loc)
 
-		//using.set_eye(null)
-		//using.client.view = world.view
+		using.set_eye(null)
+
+		if(using.client.widescreen)
+			using.client.view = "21x15"
+		else
+			using.client.view = "15x15"
+
 		if(ishuman(using) && istype(using.abilityHolder, /datum/abilityHolder/composite))
 			using.targeting_ability = null
 			using.update_cursor()

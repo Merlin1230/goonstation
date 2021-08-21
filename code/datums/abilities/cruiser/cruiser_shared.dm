@@ -14,7 +14,12 @@
 
 		var/mob/M = holder.owner
 		M.set_eye(null)
-		M.client.view = world.view
+
+		if(M.client.widescreen)
+			M.client.view = "21x15"
+		else
+			M.client.view = "15x15"
+
 		holder.removeAbility(/datum/targetable/cruiser/cancel_camera)
 
 /datum/targetable/cruiser/toggle_interior
