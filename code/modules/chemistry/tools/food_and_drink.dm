@@ -102,6 +102,9 @@
 
 	var/dropped_item = null
 
+	// Used in Special Order events
+	var/meal_time_flags = 0
+
 	New()
 		..()
 		start_amount = amount
@@ -549,7 +552,7 @@
 */
 			if (src.reagents.total_volume)
 				logTheThing("combat", user, M, "[user == M ? "takes a sip from" : "makes [constructTarget(M,"combat")] drink from"] [src] [log_reagents(src)] at [log_loc(user)].")
-				src.reagents.reaction(M, INGEST, min(reagents.total_volume, gulp_size, (M.reagents?.maximum_volume-M.reagents?.total_volume)))
+				src.reagents.reaction(M, INGEST, max(min(reagents.total_volume, gulp_size, (M.reagents?.maximum_volume-M.reagents?.total_volume)), CHEM_EPSILON))
 				SPAWN_DBG(0.5 SECONDS)
 					if (src?.reagents && M?.reagents)
 						src.reagents.trans_to(M, min(reagents.total_volume, gulp_size))
@@ -565,7 +568,7 @@
 	//bleck, i dont like this at all. (Copied from chemistry-tools reagent_containers/glass/ definition w minor adjustments)
 	afterattack(obj/target, mob/user , flag)
 		user.lastattacked = target
-		if (istype(target, /obj/fluid)) // fluid handling : If src is empty, fill from fluid. otherwise add to the fluid.
+		if (istype(target, /obj/fluid) && !istype(target, /obj/fluid/airborne)) // fluid handling : If src is empty, fill from fluid. otherwise add to the fluid.
 			var/obj/fluid/F = target
 			if (!src.reagents.total_volume)
 				if (!F.group || !F.group.reagents.total_volume)
@@ -590,7 +593,7 @@
 				var/trans = src.reagents.trans_to(T, src.splash_all_contents ? src.reagents.total_volume : src.amount_per_transfer_from_this)
 				boutput(user, "<span class='notice'>You transfer [trans] units of the solution to [T].</span>")
 
-		else if (istype(target, /obj/reagent_dispensers) || (target.is_open_container() == -1 && target.reagents) || (istype(target, /obj/fluid) && !src.reagents.total_volume)) //A dispenser. Transfer FROM it TO us.
+		else if (istype(target, /obj/reagent_dispensers) || (target.is_open_container() == -1 && target.reagents) || (istype(target, /obj/fluid) && !istype(target, /obj/fluid/airborne) && !src.reagents.total_volume)) //A dispenser. Transfer FROM it TO us.
 			if (!target.reagents.total_volume && target.reagents)
 				boutput(user, "<span class='alert'>[target] is empty.</span>")
 				return
@@ -911,7 +914,7 @@
 					playsound(U, "sound/impact_sounds/Slimy_Splat_1.ogg", 50, 1)
 					var/damage = rand(5,15)
 					random_brute_damage(user, damage)
-					take_bleeding_damage(user, damage)
+					take_bleeding_damage(user, null, damage)
 			else
 				src.shatter++
 				user.visible_message("<span class='alert'><b>[user]</b> [pick("shanks","stabs","attacks")] [target] with the broken [src]!</span>")
@@ -919,7 +922,7 @@
 				playsound(target, "sound/impact_sounds/Flesh_Stab_1.ogg", 60, 1)
 				var/damage = rand(1,10)
 				random_brute_damage(target, damage)//shiv that nukie/secHoP
-				take_bleeding_damage(target, damage)
+				take_bleeding_damage(target, null, damage)
 		..()
 
 	proc/smash_on_thing(mob/user as mob, atom/target as turf|obj|mob) // why did I have this as a proc on tables?  jeez, babbycoder haine, you really didn't know shit about nothin
@@ -1341,7 +1344,7 @@
 	onEnd()
 
 		if (glass.reagents.total_volume) //Take a sip
-			glass.reagents.reaction(target, INGEST, min(glass.reagents.total_volume, glass.gulp_size, (target.reagents?.maximum_volume-target.reagents?.total_volume)))
+			glass.reagents.reaction(target, INGEST, max(min(glass.reagents.total_volume, glass.gulp_size, (target.reagents?.maximum_volume-target.reagents?.total_volume)), CHEM_EPSILON))
 			glass.reagents.trans_to(target, min(glass.reagents.total_volume, glass.gulp_size))
 			playsound(target.loc,"sound/items/drink.ogg", rand(10,50), 1)
 			target.urine += 0.1
@@ -1772,15 +1775,22 @@
 	initial_reagents = list("energydrink"=20)
 
 
-/obj/item/reagent_containers/food/drinks/detflask
+/obj/item/reagent_containers/food/drinks/flask
+	name = "flask"
+	desc = "For the busy alcoholic."
+	icon = 'icons/obj/foodNdrink/bottle.dmi'
+	icon_state = "flask"
+	item_state = "flask"
+	g_amt = 5
+	initial_volume = 40
+	can_recycle = FALSE
+
+/obj/item/reagent_containers/food/drinks/flask/det
 	name = "detective's flask"
 	desc = "Must be migrational."
 	icon = 'icons/obj/foodNdrink/bottle.dmi'
 	icon_state = "detflask"
 	item_state = "detflask"
-	g_amt = 5
-	initial_volume = 40
-	can_recycle = FALSE
 	initial_reagents = list("bojack"=40)
 
 /obj/item/reagent_containers/food/drinks/cocktailshaker

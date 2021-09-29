@@ -198,7 +198,7 @@
 			interior_area = locate(interior_area)
 			interior_area.ship = src
 		else
-			del(src)
+			qdel(src)
 
 		shield_obj = new(src.loc)
 		var/matrix/mtx = new
@@ -239,7 +239,7 @@
 	disposing()
 		STOP_TRACKING_CAT(TR_CAT_PODS_AND_CRUISERS)
 
-		del(camera)
+		qdel(camera)
 		if(interior_area)
 			interior_area = null
 		..()

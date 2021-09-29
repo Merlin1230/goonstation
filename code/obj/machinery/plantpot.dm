@@ -19,6 +19,7 @@
 	proc/update_maptext()
 		if (!src.current)
 			src.maptext = "<span class='pixel ol c vb'></span>"
+			return
 		maptext_width = 96
 		maptext_y = 32
 		maptext_x = -32
@@ -102,38 +103,38 @@
 	var/auto_water = TRUE
 
 	New()
-		var/datum/plant/P
-		//Adjust processing tier to slow down server burden unless necessary
-		if(spawn_plant)
-			P = new spawn_plant()
-			if(!P.special_proc)
-				processing_tier = PROCESSING_32TH
-		..()
-		status |= BROKEN
+		SPAWN_DBG(0) // delay for prefab attribute assignment
+			var/datum/plant/P
+			//Adjust processing tier to slow down server burden unless necessary
+			if(spawn_plant)
+				P = new spawn_plant()
+				if(!P.special_proc)
+					processing_tier = PROCESSING_32TH
+			..()
+			status |= BROKEN
 
-		if(P)
-			var/obj/item/seed/S = unpool(/obj/item/seed)
+			if(P)
+				var/obj/item/seed/S = unpool(/obj/item/seed)
 
-			S.generic_seed_setup(P)
-			src.HYPnewplant(S)
+				S.generic_seed_setup(P)
+				src.HYPnewplant(S)
 
-			for(var/commutes in spawn_commuts)
-				HYPaddCommut(src.current, src.plantgenes, commutes)
+				for(var/commutes in spawn_commuts)
+					HYPaddCommut(src.current, src.plantgenes, commutes)
 
-			if(spawn_growth)
-				src.grow_level = spawn_growth
+				if(spawn_growth)
+					src.grow_level = spawn_growth
+				else
+					src.grow_level = pick(3,4,4)
+				switch(grow_level)
+					if(2)
+						src.growth = (src.current.growtime - src.plantgenes.growtime) / 2
+					if(3)
+						src.growth = src.current.growtime - src.plantgenes.growtime
+					if(4)
+						src.growth = src.current.harvtime - src.plantgenes.harvtime
+				update_icon()
 			else
-				src.grow_level = pick(3,4,4)
-			switch(grow_level)
-				if(2)
-					src.growth = (src.current.growtime - src.plantgenes.growtime) / 2
-				if(3)
-					src.growth = src.current.growtime - src.plantgenes.growtime
-				if(4)
-					src.growth = src.current.harvtime - src.plantgenes.harvtime
-			update_icon()
-		else
-			SPAWN_DBG(1 SECOND)
 				if(!src.current)
 					qdel(src)
 
@@ -321,6 +322,10 @@
 	power_change()
 		. = ..()
 		update_icon()
+
+	was_deconstructed_to_frame(mob/user)
+		src.current = null // Dont think this would lead to any frustrations, considering like, youre chopping the machine up of course itd destroy the plant.
+		boutput( user, "<span class='alert'>In the process of deconstructing the tray you destroy the plant.</span>" )
 
 	process()
 		..()
@@ -765,7 +770,7 @@
 		else ..()
 
 	attack_ai(mob/user as mob)
-		if(isrobot(user) && get_dist(src, user) <= 1) return src.attack_hand(user)
+		if(isrobot(user) && get_dist(src, user) <= 1) return src.Attackhand(user)
 
 	attack_hand(var/mob/user as mob)
 		if(isAI(user) || isobserver(user)) return // naughty AIs used to be able to harvest plants
@@ -1076,7 +1081,7 @@
 		else
 			logTheThing("debug", null, null, "<b>Hydro Controls</b>: Could not access Hydroponics Controller to get Harvest cap.")
 
-		src.growth = growing.growtime - DNA.growtime
+		src.growth = max(0, growing.growtime - DNA.growtime)
 		// Reset the growth back to the beginning of maturation so we can wait out the
 		// harvest time again.
 		var/getamount = growing.cropsize + DNA.cropsize

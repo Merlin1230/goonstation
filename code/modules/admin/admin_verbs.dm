@@ -277,6 +277,7 @@ var/list/admin_verbs = list(
 		/datum/admins/proc/heavenly_spawn_obj,
 		/datum/admins/proc/supplydrop_spawn_obj,
 		/datum/admins/proc/demonically_spawn_obj,
+		/datum/admins/proc/spawn_figurine,
 
 		// moved down from coder. shows artists, atmos etc
 		/client/proc/SetInfoOverlay,
@@ -335,8 +336,7 @@ var/list/admin_verbs = list(
 		/client/proc/cmd_crusher_walls,
 		/client/proc/cmd_disco_lights,
 		/client/proc/cmd_blindfold_monkeys,
-		/client/proc/cmd_swampify_station,
-		/client/proc/cmd_trenchify_station,
+		/client/proc/cmd_terrainify_station,
 		/client/proc/cmd_special_shuttle,
 
 		/datum/admins/proc/toggleaprilfools,
@@ -731,8 +731,8 @@ var/list/special_pa_observing_verbs = list(
 			//stealth_hide_fakekey = (alert("Hide your fake key when using DSAY?", "Extra stealthy","Yes", "No") == "Yes")
 			// I think if people really wanna be Denmark they can just set themselves to be Denmark
 			new_key = strip_html(new_key)
-			if (length(new_key) >= 26)
-				new_key = copytext(new_key, 1, 26)
+			if (length(new_key) >= 50)
+				new_key = copytext(new_key, 1, 50)
 			src.owner:fakekey = new_key
 	else
 		src.owner:fakekey = null
@@ -777,8 +777,8 @@ var/list/special_pa_observing_verbs = list(
 		if (new_key)
 			new_key = trim(new_key)
 			new_key = strip_html(new_key)
-			if (length(new_key) >= 26)
-				new_key = copytext(new_key, 1, 26)
+			if (length(new_key) >= 50)
+				new_key = copytext(new_key, 1, 50)
 			src.owner:fakekey = new_key
 	else
 		src.owner:fakekey = null
@@ -881,7 +881,6 @@ var/list/fun_images = list()
 	if (!crossness || crossness == "Cancel")
 		return
 
-	message_admins(crossness)
 	if(!M.client)
 		alert("[M] is logged out, so you should probably ban them!")
 		return
