@@ -99,9 +99,7 @@
 		if (..())
 			return 1
 
-		var/obj/machinery/cruiser_destroyable/cruiser_pod/C = holder.owner.loc
-		var/area/cruiser/I = C.loc.loc
-		var/obj/machinery/cruiser/P = I.ship
+		var/obj/machinery/cruiser/P = get_cruiser()
 		cooldown = P.fireAt(target)
 
 /datum/targetable/cruiser/shield_overload
@@ -118,9 +116,7 @@
 		if (..())
 			return 1
 
-		var/obj/machinery/cruiser_destroyable/cruiser_pod/C = holder.owner.loc
-		var/area/cruiser/I = C.loc.loc
-		var/obj/machinery/cruiser/P = I.ship
+		var/obj/machinery/cruiser/P = get_cruiser()
 		P.overload_shields()
 
 /datum/targetable/cruiser/weapon_overload
@@ -137,9 +133,7 @@
 		if (..())
 			return 1
 
-		var/obj/machinery/cruiser_destroyable/cruiser_pod/C = holder.owner.loc
-		var/area/cruiser/I = C.loc.loc
-		var/obj/machinery/cruiser/P = I.ship
+		var/obj/machinery/cruiser/P = get_cruiser()
 		P.overload_weapons()
 
 /datum/targetable/cruiser/shield_modulation
@@ -156,9 +150,7 @@
 		if (..())
 			return 1
 
-		var/obj/machinery/cruiser_destroyable/cruiser_pod/C = holder.owner.loc
-		var/area/cruiser/I = C.loc.loc
-		var/obj/machinery/cruiser/P = I.ship
+		var/obj/machinery/cruiser/P = get_cruiser()
 		P.toggleShieldModulation()
 
 /datum/targetable/cruiser/firemode
@@ -175,9 +167,7 @@
 		if (..())
 			return 1
 
-		var/obj/machinery/cruiser_destroyable/cruiser_pod/C = holder.owner.loc
-		var/area/cruiser/I = C.loc.loc
-		var/obj/machinery/cruiser/P = I.ship
+		var/obj/machinery/cruiser/P = get_cruiser()
 		P.switchFireMode()
 
 /datum/targetable/cruiser/ram
@@ -194,7 +184,23 @@
 		if (..())
 			return 1
 
-		var/obj/machinery/cruiser_destroyable/cruiser_pod/C = holder.owner.loc
-		var/area/cruiser/I = C.loc.loc
-		var/obj/machinery/cruiser/P = I.ship
+		var/obj/machinery/cruiser/P = get_cruiser()
 		P.enableRamming()
+
+/datum/targetable/cruiser/cloak
+	name = "Cloak"
+	desc = "Enables The Cloaking Device"
+	icon_state = "warp"
+	cooldown = 50
+	targeted = 0
+	target_anything = 0
+	dont_lock_holder = 1
+	ignore_holder_lock = 1
+	for_movement_pod = 1
+
+	cast(atom/target)
+		if(..())
+			return 1
+
+		var/obj/machinery/cruiser/P = get_cruiser()
+		P.togglecloak()

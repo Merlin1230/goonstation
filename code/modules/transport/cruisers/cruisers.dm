@@ -57,6 +57,7 @@
 	var/obj/item/shipcomponent/mainweapon/turret_right = null
 	var/obj/item/shipcomponent/engine/engine = null
 	var/obj/item/shipcomponent/life_support/life_support = null
+	var/obj/item/shipcomponent/secondary_system/secondary_system = null
 
 	var/list/powerUse = list()
 
@@ -103,6 +104,8 @@
 
 	var/degradation = 0 //Slowly accumulates and makes new damage more severe.
 	var/warping = 0
+	var/cloaked = 0
+	var/cloak_time = 5
 
 	var/list/pooList = list()
 	var/list/interiorViewers = list()
@@ -804,6 +807,19 @@
 			if(WEST)
 				return locate(src.x + 5, src.y + 2, src.z)
 
+	proc/togglecloak()
+		if(src.cloaked)
+			src.shield_obj.alpha = 170
+			src.shield_obj.icon_state = "shield_reboot"
+			animate(src,time = 10, alpha = 255)
+			src.shield_obj.invisibility = 0
+			src.cloaked = 0
+		else
+			src.shield_obj.alpha = 170
+			src.shield_obj.icon_state = "shield_collaspe"
+			animate(src,time = 5, alpha = 0,)
+			src.shield_obj.invisibility = 101
+			src.cloaked = 1
 /area/cruiser
 	name = "cruiser interior"
 	icon = 'icons/turf/areas.dmi'
@@ -1173,6 +1189,87 @@
 			interior.ship.life_support.set_loc(src.loc)
 			interior.ship.life_support = null
 		return
+
+/obj/machinery/cruiser_destroyable/cruiser_component_slot/secondary
+	name = "Secondary System Slot"
+	container_type = /obj/item/shipcomponent/secondary_system
+	//Associative list of the secondary systems and their related ability
+	var/ability_list = list()
+	//This is for storing instances of the cruiser abilities for quick use
+	var/path_list = list()
+
+	proc/set_up_ability_path_list()
+		for(var/P in childrentypesof(/datum/targetable/cruiser))
+			src.path_list += new P
+
+	proc/get_ability_from_path(var/ability_path)
+		if(!ispath(ability_path))
+			logTheThing("debug", null, null, "<b>Cruiser:</b> Tried to find ability with null path.")
+			return null
+		for(var/datum/M in path_list)
+			if(ability_path == M.type)
+				return M
+
+	proc/remove_ability_from_pod(obj/machinery/cruiser_destroyable/cruiser_pod/pod,datum/targetable/cruiser/ability)
+		//The abilities get suspended when not in use, and removeAbility doesn't remove from suspended, so we have to resume abilities when not in use
+		if(!pod?.using) pod?.AbHolder?.resumeAllAbilities()
+		pod?.AbHolder?.removeAbility(ability?.type)
+		// and then here we just suspend it again
+		if(!pod?.using) pod?.AbHolder?.suspendAllAbilities()
+
+	proc/add_ability_to_pod(obj/machinery/cruiser_destroyable/cruiser_pod/pod,datum/targetable/cruiser/ability)
+		//addAbility adds to abilities, but not suspended. it works fine, but there is a reason things get suspended so I'm just gonna do this
+		if(!pod?.using) pod?.AbHolder?.resumeAllAbilities()
+		pod?.AbHolder?.addAbility(ability?.type)
+		if(!pod?.using) pod?.AbHolder?.suspendAllAbilities()
+
+
+	New()
+		..()
+		set_up_ability_path_list()
+		ability_list[/obj/item/shipcomponent/secondary_system/cloak] =  get_ability_from_path(/datum/targetable/cruiser/cloak)
+
+	install_component()
+		var/area/cruiser/interior = get_area(src)
+		if(interior?.ship)
+			for(var/atom/movable/A in src.loc)
+				if(istype(A, container_type))
+					A.set_loc(interior.ship)
+					interior.ship.secondary_system = A
+
+					if(ability_list[A.type])
+						var/datum/targetable/cruiser/S = ability_list[A.type]
+						for(var/obj/machinery/cruiser_destroyable/cruiser_pod/pod in interior)
+
+							if(S.for_movement_pod && istype(pod, /obj/machinery/cruiser_destroyable/cruiser_pod/movement))
+								add_ability_to_pod(pod,S)
+								break
+
+							if(S.for_security_pod && istype(pod, /obj/machinery/cruiser_destroyable/cruiser_pod/security))
+								add_ability_to_pod(pod, S)
+								break
+					break
+
+
+	uninstall_component()
+		var/area/cruiser/interior = get_area(src)
+		if(interior?.ship?.secondary_system)
+			var/atom/movable/A = interior.ship.secondary_system
+
+			A.set_loc(src.loc)
+			interior.ship.secondary_system = null
+
+			if(ability_list[A.type])
+				var/datum/targetable/cruiser/S = ability_list[A.type]
+				for(var/obj/machinery/cruiser_destroyable/cruiser_pod/pod in interior)
+
+					if(S.for_movement_pod && istype(pod, /obj/machinery/cruiser_destroyable/cruiser_pod/movement))
+						remove_ability_from_pod(pod,S)
+						break
+
+					if(S.for_security_pod && istype(pod, /obj/machinery/cruiser_destroyable/cruiser_pod/security))
+						remove_ability_from_pod(pod,S)
+						break
 
 /obj/machinery/cruiser_destroyable/cruiser_exit
 	name = "ship exit"

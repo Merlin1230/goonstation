@@ -50,6 +50,10 @@
 	var/disabled = 0
 	var/toggled = 0
 	var/is_on = 0   // used if a toggle ability
+	// These two are for the secondary systems, set whichever pod you want the ability to be assigned to.
+	var/for_movement_pod = 0
+	var/for_security_pod = 0
+
 	preferred_holder_type = /datum/abilityHolder/cruiser
 	ignore_sticky_cooldown = 1
 
@@ -109,3 +113,8 @@
 	cast(atom/target)
 		. = ..()
 		actions.interrupt(holder.owner, INTERRUPT_ACT)
+
+	proc/get_cruiser()
+		var/obj/machinery/cruiser_destroyable/cruiser_pod/C = src.holder.owner.loc
+		var/area/cruiser/I = C.loc.loc
+		return I.ship
