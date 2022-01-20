@@ -187,6 +187,7 @@
 		"access" = modify?.access,
 		"registered" = modify?.registered,
 		"assignment" = modify?.assignment,
+		"pronoun" = modify?.pronouns.name,
 		"title" = modify?.title,
 		"hasId" = !!modify
 	)
@@ -208,7 +209,7 @@
 		"engineering" = engineering_access_list,
 		"supply" = supply_access_list,
 		"research" = research_access_list,
-		"security" = security_access_list,
+		"security" = security_access_list - access_maxsec,
 		"command" = command_access_list
 	)
 

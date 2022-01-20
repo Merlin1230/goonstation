@@ -1,12 +1,13 @@
-export type id ={
+export interface id{
   access?: number[]
   registered?: string
   assignment?: string
   title?: string
+  pronoun?: string
   hasId: boolean
 }
 
-export type IdConsoleData = {
+export interface IdConsoleData{
   modifiedId?: id
   scannedId?: id
   civillian: number[]
@@ -66,17 +67,17 @@ export enum accessNumber {
   Firearms_carry_permit = 39,
   Contraband_handling_permit = 75,
   // command access
-  Research_Director_office = 11,
+  Research_Directors_Office = 11,
   Emergency_storage = 14,
   ID_console = 15,
   AI_upload = 16,
   Teleporter = 17,
   EVA = 18,
   Bridge = 19,
-  Captain_office = 20,
-  Cheif_Engineer_office = 49,
-  Medical_Director_office = 53,
-  Head_of_Personnel_office = 55,
+  Captains_Office = 20,
+  Cheif_Engineers_Office = 49,
+  Medical_Directors_Office = 53,
+  Head_of_Personnels_Office = 55,
   Ghostdrone = 56
 }
 
