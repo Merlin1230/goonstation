@@ -67,17 +67,18 @@ export enum accessNumber {
   Firearms_carry_permit = 39,
   Contraband_handling_permit = 75,
   // command access
-  Research_Directors_Office = 11,
+  Research_Director_Office = 11,
   Emergency_storage = 14,
   ID_console = 15,
   AI_upload = 16,
   Teleporter = 17,
   EVA = 18,
   Bridge = 19,
-  Captains_Office = 20,
-  Cheif_Engineers_Office = 49,
-  Medical_Directors_Office = 53,
-  Head_of_Personnels_Office = 55,
+  Captain_Office = 20,
+  Chief_Engineer_Office = 49,
+  Medical_Director_Office = 53,
+  Head_of_Personnel_Office = 55,
+  DWAINE_Superuser = 34,
   Ghostdrone = 56
 }
 

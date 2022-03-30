@@ -54,42 +54,36 @@ export const IdConsole = (props, context) => {
               <Stack>
                 <Stack.Item>
                   <Tabs vertical>
-                    <Tabs.Tab
-                      selected={accessMenu === accessTabKeys.Civillian}
-                      onClick={() => setAccessMenu(accessTabKeys.Civillian)}
-                    >
-                      Civillian
-                    </Tabs.Tab>
-                    <Tabs.Tab
-                      selected={accessMenu === accessTabKeys.Engineering}
-                      onClick={() => setAccessMenu(accessTabKeys.Engineering)}
-                    >
-                      Engineering
-                    </Tabs.Tab>
-                    <Tabs.Tab
-                      selected={accessMenu === accessTabKeys.Supply}
-                      onClick={() => setAccessMenu(accessTabKeys.Supply)}
-                    >
-                      Supply
-                    </Tabs.Tab>
-                    <Tabs.Tab
-                      selected={accessMenu === accessTabKeys.Research}
-                      onClick={() => setAccessMenu(accessTabKeys.Research)}
-                    >
-                      Research
-                    </Tabs.Tab>
-                    <Tabs.Tab
-                      selected={accessMenu === accessTabKeys.Security}
-                      onClick={() => setAccessMenu(accessTabKeys.Security)}
-                    >
-                      Security
-                    </Tabs.Tab>
-                    <Tabs.Tab
-                      selected={accessMenu === accessTabKeys.Command}
-                      onClick={() => setAccessMenu(accessTabKeys.Command)}
-                    >
-                      Command
-                    </Tabs.Tab>
+                    <ConsoleTab
+                      name="Civillian"
+                      tabkey={accessTabKeys.Civillian}
+                      list={data.civillian}
+                    />
+                    <ConsoleTab
+                      name="Engineering"
+                      tabkey={accessTabKeys.Engineering}
+                      list={data.engineering}
+                    />
+                    <ConsoleTab
+                      name="Supply"
+                      tabkey={accessTabKeys.Supply}
+                      list={data.supply}
+                    />
+                    <ConsoleTab
+                      name="Research"
+                      tabkey={accessTabKeys.Research}
+                      list={data.research}
+                    />
+                    <ConsoleTab
+                      name="Security"
+                      tabkey={accessTabKeys.Security}
+                      list={data.security}
+                    />
+                    <ConsoleTab
+                      name="Command"
+                      tabkey={accessTabKeys.Command}
+                      list={data.command}
+                    />
                   </Tabs>
                 </Stack.Item>
                 <Stack.Item>
@@ -166,5 +160,32 @@ export const AccessTab = (props: accessTabProps, context) => {
         </Stack.Item>
       ))}
     </Stack>
+  );
+};
+
+type consoleTabProps ={
+  list: number[]
+  name: string
+  tabkey: accessTabKeys
+}
+
+const ConsoleTab = (props: consoleTabProps, context) => {
+  const { act, data } = useBackend<IdConsoleData>(context);
+  const [accessMenu, setAccessMenu] = useLocalState(context, 'accessMenu', accessTabKeys.Civillian);
+  let accessAmount: number = 0;
+
+  props.list.forEach(element => {
+    if (data.modifiedId.access.includes(element)) {
+      accessAmount += 1;
+    }
+  });
+
+  return (
+    <Tabs.Tab
+      selected={accessMenu === props.tabkey}
+      onClick={() => setAccessMenu(props.tabkey)}
+    >
+      {`${props.name} ${accessAmount}/${props.list.length}`}
+    </Tabs.Tab>
   );
 };
