@@ -284,6 +284,41 @@
 			else
 				src.modify.access += params["access"]
 				. = TRUE
+		if("assign")
+			var/new_assignment = input(usr, "Enter a custom job assignment.", "Assignment")
+			if(!src.modify || !src.authenticated)
+				return
+			new_assignment = strip_html(new_assignment, 100, 1)
+			logTheThing("station", usr, null, "changes the assignment on the ID card (<b>[src.modify.registered]</b>) from <b>[src.modify.assignment]</b> to <b>[new_assignment]</b>.")
+			playsound(src.loc, "keyboard", 50, 1, -15)
+			if(src.modify && src.authenticated)
+				src.modify.assignment = new_assignment
+				. = TRUE
+		if("name")
+			if (src.authenticated)
+				var/t2 = src.modify
+
+				var/t1 = input(usr, "What name?", "ID computer", null)
+				t1 = strip_html(t1, 100, 1)
+
+				if ((src.authenticated && src.modify == t2 && (in_interact_range(src, usr) || (issilicon(usr) || isAI(usr))) && istype(src.loc, /turf)))
+					logTheThing("station", usr, null, "changes the registered name on the ID card from <b>[src.modify.registered]</b> to <b>[t1]</b>.")
+					src.modify.registered = t1
+					. = TRUE
+
+				playsound(src.loc, "keyboard", 50, 1, -15)
+		if("pronouns")
+			if (src.authenticated && src.modify)
+				if(params["pronouns"] == "next")
+					if(src.modify?.pronouns)
+						src.modify.pronouns = src.modify.pronouns.next_pronouns()
+						. = TRUE
+					else
+						src.modify.pronouns = get_singleton(/datum/pronouns/theyThem)
+						. = TRUE
+				else if(params["pronouns"] == "remove")
+					src.modify.pronouns = null
+					. = TRUE
 
 /obj/machinery/computer/card/attack_hand(var/mob/user as mob)
 	if(..())

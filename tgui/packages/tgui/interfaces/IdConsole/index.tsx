@@ -14,8 +14,8 @@ export const IdConsole = (props, context) => {
   return (
     <Window
       title="ID Console"
-      width={515}
-      height={500}
+      width={530}
+      height={390}
     >
       <Section>
         <Stack vertical>
@@ -33,19 +33,25 @@ export const IdConsole = (props, context) => {
           <Stack vertical>
             <Stack.Item>
               Name:
-              <Button>
+              <Button
+                onClick={() => act('name')}
+              >
                 {data.modifiedId.registered}
               </Button>
             </Stack.Item>
             <Stack.Item>
               Job:
-              <Button>
+              <Button
+                onClick={() => act('assign')}
+              >
                 {data.modifiedId.assignment}
               </Button>
             </Stack.Item>
             <Stack.Item>
               Pronouns:
-              <Button>
+              <Button
+                onClick={() => act('pronouns', { pronouns: 'next' })}
+              >
                 {data.modifiedId.pronoun}
               </Button>
             </Stack.Item>
@@ -86,8 +92,8 @@ export const IdConsole = (props, context) => {
                     />
                   </Tabs>
                 </Stack.Item>
-                <Stack.Item>
-                  <Section>
+                <Stack.Item grow={1}>
+                  <Section scrollable fill>
                     {accessMenu === accessTabKeys.Civillian
                     && <AccessTab list={data.civillian} />}
                     {accessMenu === accessTabKeys.Engineering
@@ -142,13 +148,16 @@ type accessTabProps = {
   list: number[]
 }
 
-export const AccessTab = (props: accessTabProps, context) => {
+const AccessTab = (props: accessTabProps, context) => {
   const { act, data } = useBackend<IdConsoleData>(context);
 
   return (
     <Stack wrap>
       {props.list.map((access) => (
-        <Stack.Item key={access}>
+        <Stack.Item
+          key={access}
+          grow={1}
+        >
           <Button.Checkbox
             textAlign="center"
             checked={data.modifiedId.access.includes(access)}
@@ -185,7 +194,12 @@ const ConsoleTab = (props: consoleTabProps, context) => {
       selected={accessMenu === props.tabkey}
       onClick={() => setAccessMenu(props.tabkey)}
     >
-      {`${props.name} ${accessAmount}/${props.list.length}`}
+      <Box>
+        {props.name}
+      </Box>
+      <Box>
+        {`${accessAmount}/${props.list.length}`}
+      </Box>
     </Tabs.Tab>
   );
 };
