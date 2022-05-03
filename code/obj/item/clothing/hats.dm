@@ -637,7 +637,7 @@ proc/filter_trait_hats(var/type)
 	var/badge = null
 
 	attackby(obj/item/C as obj,mob/user as mob)
-		if (istype(C, /obj/item/clothing/suit/security_badge/rancher))
+		if (istype(C, /obj/item/clothing/suit/security_badge))
 			user.drop_item()
 			C.set_loc(src)
 			if (isnull(src.badge))
@@ -667,11 +667,11 @@ proc/filter_trait_hats(var/type)
 		set category = "Local"
 		set src in usr
 
-	if (is_incapacitated(usr))
-		return
+		if (is_incapacitated(usr))
+			return
 
-	usr.put_in_hand_or_drop(src.badge)
-	src.badge = null
+		usr.put_in_hand_or_drop(src.badge)
+		src.badge = null
 
 /obj/item/clothing/head/longbee
 	name = "Longbee"
